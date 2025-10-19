@@ -1,5 +1,5 @@
 <p align="center">
-  <img src="/visuals/bot-logo.jpg" width="200" alt="Autonomous Bot Logo" />
+  <img src="/visuals/bot-logo.jpg" width="450" alt="Autonomous Bot Logo" />
 </p>
 
 <p align="center">
