@@ -996,5 +996,5 @@ Husky automatically runs linting and formatting before commits:
 ---
 
 <p align="center">
-  <b>🤖 Powered by Autonomous Intelligence 🤖</b>
+  <b>🤖 Powered by Autonomous Intelligence by Thapelo 🤖</b>
 </p>
