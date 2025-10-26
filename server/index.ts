@@ -11,7 +11,7 @@ app.use(express.json());
 
 const client = new MongoClient(process.env.MONGODB_ATLAS_URI as string);
 
-async function runServer() {
+async function startServer() {
     try {
         await client.connect();
         await client.db('admin').command({ ping: 1 });
@@ -54,6 +54,9 @@ async function runServer() {
         });
 
     } catch (error) {
-        console.error(error);
+        console.error('Error connecting to mongoDB',error);
+        process.exit(1);
     }
 }
+
+startServer()
