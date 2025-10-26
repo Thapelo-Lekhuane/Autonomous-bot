@@ -10,3 +10,11 @@ app.use(cors());
 app.use(express.json());
 
 const client = new MongoClient(process.env.MONGODB_ATLAS_URI as string);
+
+async function runServer() {
+    try {
+
+
+    } catch (error) {
+        console.error(error);
+    }
