@@ -20,6 +20,7 @@ async function runServer() {
         app.get('/', (req: Request, res: Response) => {
             res.send('LangGraph Agent Server');
         })
+
         app.post('/chat', async (req: Request, res: Response) => {
             const initialMessage = req.body.message;
             const threadId = Date.now().toString();
@@ -32,25 +33,25 @@ async function runServer() {
                 res.status(500).json({ error: 'Error Starting Conversation' })
             }
         })
+
         app.post('/chat/:threadId', async (req: Request, res: Response) => {
         const { threadId } = req.params;
         connt { message } = req.body;  
 
         try {
             const response = await callAgent(client, message, threadId)
+            res.json({ response })
            
         } catch (error) {
             console.error('Error Continuing Conversation:', error)
+            res.status(500).json({ error: 'Error Continuing Conversation' })
         }
-         
+    })
 
-
-
-
-
-
-
-
+        const PORT = process.env.PORT || 8000;
+        app.listen(PORT, () => {
+            console.log(`Server is running on port ${PORT}`);
+        });
 
     } catch (error) {
         console.error(error);
