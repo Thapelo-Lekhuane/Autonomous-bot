@@ -215,3 +215,54 @@ Current time: {time}`,
           time: new Date().toISOString(), // Current timestamp
           messages: state.messages,       // All previous messages
         })
+
+         // Call the AI model with the formatted prompt
+        const result = await model.invoke(formattedPrompt)
+        // Return new state with the AI's response added
+        return { messages: [result] }
+      })
+    }
+
+    // Build the workflow graph
+    const workflow = new StateGraph(GraphState)
+      .addNode("agent", callModel)                    // Add AI model node
+      .addNode("tools", toolNode)                     // Add tool execution node
+      .addEdge("__start__", "agent")                  // Start workflow at agent
+      .addConditionalEdges("agent", shouldContinue)   // Agent decides: tools or end
+      .addEdge("tools", "agent")                      // After tools, go back to agent
+
+    // Initialize conversation state persistence
+    const checkpointer = new MongoDBSaver({ client, dbName })
+    // Compile the workflow with state saving
+    const app = workflow.compile({ checkpointer })
+
+    // Execute the workflow
+    const finalState = await app.invoke(
+      {
+        messages: [new HumanMessage(query)], // Start with user's question
+      },
+      { 
+        recursionLimit: 15,                   // Prevent infinite loops
+        configurable: { thread_id: thread_id } // Conversation thread identifier
+      }
+    )
+
+    // Extract the final response from the conversation
+    const response = finalState.messages[finalState.messages.length - 1].content
+    console.log("Agent response:", response)
+
+    return response // Return the AI's final response
+
+  } catch (error: any) {
+    // Handle different types of errors with user-friendly messages
+    console.error("Error in callAgent:", error.message)
+    
+    if (error.status === 429) { // Rate limit error
+      throw new Error("Service temporarily unavailable due to rate limits. Please try again in a minute.")
+    } else if (error.status === 401) { // Authentication error
+      throw new Error("Authentication failed. Please check your API configuration.")
+    } else { // Generic error
+      throw new Error(`Agent failed: ${error.message}`)
+    }
+  }
+}
