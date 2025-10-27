@@ -1,2 +1,4 @@
 .github/instructions/kluster-code-verify.instructions.md
 .kluster
+.env
+node_modules/
